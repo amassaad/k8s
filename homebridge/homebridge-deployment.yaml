@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f compose.yml
+    kompose.version: 1.32.0 (HEAD)
+  labels:
+    io.kompose.service: homebridge
+  name: homebridge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: homebridge
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f compose.yml
+        kompose.version: 1.32.0 (HEAD)
+      labels:
+        io.kompose.service: homebridge
+    spec:
+      containers:
+        - image: homebridge/homebridge:latest
+          name: homebridge
+          ports:
+            - containerPort: 8581
+          volumeMounts:
+            - mountPath: /homebridge
+              name: homebridge-claim0
+      restartPolicy: Always
+      hostNetwork: true
+      volumes:
+        - name: homebridge-claim0
+          persistentVolumeClaim:
+            claimName: homebridge-claim0
